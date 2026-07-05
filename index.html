@@ -3,32 +3,28 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>PrivacyPal × YouTube — Clickable Prototype</title>
+<title>PrivacyPal × YouTube — Prototype</title>
 <style>
   :root{ --yt-red:#FF0000; --ink:#0f0f0f; --paper:#f9f9f9; --line:#e5e5e5; --mute:#606060; --green:#1ea84a; --blue:#065fd4; }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  body{ margin:0; font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:#111; color:var(--ink);
-        display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:22px 12px 40px; }
-  h1{ color:#fff; font-size:19px; margin:2px 0 2px; font-weight:800; }
-  .sub{ color:#9a9a9a; font-size:12.5px; margin-bottom:16px; text-align:center; max-width:560px; }
-  .stage{ display:flex; gap:26px; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
-  /* phone */
-  .phone{ width:340px; height:710px; background:#000; border-radius:34px; padding:11px; box-shadow:0 18px 50px rgba(0,0,0,.55); position:relative; }
-  .screen{ width:100%; height:100%; background:#fff; border-radius:24px; overflow:hidden; position:relative; }
+  body{ margin:0; font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+        background:radial-gradient(1200px 600px at 50% -10%, #23262b 0%, #0d0e10 70%); color:#fff;
+        min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:26px 12px; }
+  .phone{ width:344px; height:720px; background:#000; border-radius:38px; padding:11px; box-shadow:0 22px 60px rgba(0,0,0,.6); position:relative; }
+  .notch{ position:absolute; top:11px; left:50%; transform:translateX(-50%); width:120px; height:22px; background:#000; border-radius:0 0 16px 16px; z-index:9; }
+  .screen{ width:100%; height:100%; background:#fff; border-radius:27px; overflow:hidden; position:relative; }
   .view{ position:absolute; inset:0; display:none; flex-direction:column; }
   .view.active{ display:flex; }
-  /* yt top bar */
-  .ytbar{ height:48px; display:flex; align-items:center; gap:8px; padding:0 12px; border-bottom:1px solid var(--line); }
-  .ytlogo{ display:flex; align-items:center; gap:5px; font-weight:800; font-size:16px; letter-spacing:-.5px; }
+  .ytbar{ height:50px; display:flex; align-items:center; gap:8px; padding:0 12px; border-bottom:1px solid var(--line); flex:none; }
+  .ytlogo{ display:flex; align-items:center; gap:5px; font-weight:800; font-size:16px; letter-spacing:-.5px; color:#0f0f0f; }
   .ytlogo .play{ width:26px; height:18px; background:var(--yt-red); border-radius:5px; position:relative; }
   .ytlogo .play:after{ content:""; position:absolute; left:9px; top:4px; border-left:8px solid #fff; border-top:5px solid transparent; border-bottom:5px solid transparent; }
   .ytbar .sp{ flex:1; }
   .icobtn{ width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; color:#333; cursor:pointer; }
-  .shield{ position:relative; }
+  .shield.badge{ position:relative; }
   .shield.badge:after{ content:""; position:absolute; top:3px; right:3px; width:8px; height:8px; background:var(--green); border-radius:50%; border:2px solid #fff; }
   .body{ flex:1; overflow-y:auto; }
-  /* feed */
-  .feed-note{ font-size:11px; color:var(--mute); padding:8px 12px; background:#f3f3f3; display:flex; align-items:center; gap:6px; }
+  .feed-note{ font-size:11px; color:var(--mute); padding:8px 12px; background:#f3f3f3; }
   .vid{ padding:0 0 12px; }
   .thumb{ width:100%; height:150px; background:linear-gradient(135deg,#cfd8e3,#9fb0c3); position:relative; }
   .thumb.b{ background:linear-gradient(135deg,#e6c9c9,#c98d8d); }
@@ -36,9 +32,8 @@
   .thumb .dur{ position:absolute; right:8px; bottom:8px; background:rgba(0,0,0,.8); color:#fff; font-size:10px; padding:1px 5px; border-radius:3px; }
   .vmeta{ display:flex; gap:10px; padding:10px 12px 0; }
   .avatar{ width:34px; height:34px; border-radius:50%; background:#bbb; flex:none; }
-  .vtitle{ font-size:13.5px; font-weight:600; line-height:1.25; }
+  .vtitle{ font-size:13.5px; font-weight:600; line-height:1.25; color:#0f0f0f; }
   .vch{ font-size:11.5px; color:var(--mute); margin-top:3px; }
-  /* chat overlay */
   .overlay{ position:absolute; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:flex-end; }
   .sheet{ width:100%; background:#0f0f0f; border-radius:22px 22px 0 0; padding:16px 16px 18px; color:#fff; animation:rise .28s ease; }
   @keyframes rise{ from{ transform:translateY(60px); opacity:.4 } to{ transform:none; opacity:1 } }
@@ -46,8 +41,10 @@
   .pp-ava{ width:34px; height:34px; border-radius:50%; background:var(--yt-red); display:flex; align-items:center; justify-content:center; font-size:17px; }
   .pp-name{ font-weight:700; font-size:14.5px; }
   .pp-on{ font-size:10px; color:var(--green); }
-  .bubble{ background:#2a2a2a; color:#eaeaea; font-size:12.5px; line-height:1.4; padding:10px 12px; border-radius:12px; margin:7px 0; max-width:88%; }
+  .chatbody{ background:#0f0f0f; color:#fff; }
+  .bubble{ background:#2a2a2a; color:#eaeaea; font-size:12.5px; line-height:1.42; padding:10px 12px; border-radius:12px; margin:7px 0; max-width:90%; }
   .bubble.me{ background:var(--yt-red); color:#fff; margin-left:auto; }
+  .bubble b{ color:#fff; }
   .tog{ display:flex; align-items:center; justify-content:space-between; gap:8px; background:#1c1c1c; border:1px solid #333; border-radius:12px; padding:11px 12px; margin:8px 0; cursor:pointer; }
   .tog .tt{ font-size:12.5px; font-weight:600; }
   .tog .td{ font-size:10.5px; color:#9a9a9a; margin-top:2px; }
@@ -58,184 +55,181 @@
   .btn{ display:block; width:100%; text-align:center; background:var(--yt-red); color:#fff; border:none; font-size:13.5px; font-weight:700; padding:13px; border-radius:12px; margin-top:12px; cursor:pointer; }
   .btn.ghost{ background:transparent; color:#cfcfcf; border:1px solid #444; margin-top:8px; }
   .btn.grn{ background:var(--green); }
-  .chips{ display:flex; flex-wrap:wrap; gap:7px; margin-top:6px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:7px; margin-top:8px; }
   .chip{ background:#1c1c1c; border:1px solid #4a4a4a; color:#eaeaea; font-size:11.5px; padding:8px 12px; border-radius:18px; cursor:pointer; }
   .chip:hover{ border-color:var(--yt-red); }
-  /* receipt / dashboard */
-  .center{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:26px; }
-  .tick{ width:66px; height:66px; border-radius:50%; background:var(--green); color:#fff; font-size:34px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
-  .center h2{ margin:0 0 8px; font-size:18px; }
+  .inbar{ display:flex; gap:8px; padding:9px 12px; border-top:1px solid #262626; background:#0f0f0f; align-items:center; flex:none; }
+  .inbar input{ flex:1; background:#1c1c1c; border:1px solid #333; border-radius:20px; padding:10px 14px; color:#fff; font-size:12.5px; outline:none; }
+  .inbar input:focus{ border-color:var(--yt-red); }
+  .inbar .send{ width:38px; height:38px; border-radius:50%; background:var(--yt-red); color:#fff; border:none; font-size:15px; cursor:pointer; flex:none; }
+  .typing{ font-size:10.5px; color:#7a7a7a; padding:2px 2px 0; }
+  .center{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; }
+  .tick{ width:64px; height:64px; border-radius:50%; background:var(--green); color:#fff; font-size:32px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
+  .center h2{ margin:0 0 8px; font-size:18px; color:#0f0f0f; }
   .center p{ margin:0; color:var(--mute); font-size:12.5px; line-height:1.5; }
-  .receipt{ text-align:left; width:100%; background:#f3f3f3; border-radius:12px; padding:12px 14px; margin-top:16px; font-size:12px; }
+  .receipt{ text-align:left; width:100%; background:#f3f3f3; border-radius:12px; padding:12px 14px; margin-top:16px; font-size:12px; color:#0f0f0f; }
   .receipt .r{ display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #e2e2e2; }
   .receipt .r:last-child{ border:none; }
-  .rv.on{ color:var(--green); font-weight:700; }
-  .rv.off{ color:#999; font-weight:700; }
+  .rv.on{ color:var(--green); font-weight:700; } .rv.off{ color:#999; font-weight:700; }
   .panel-h{ padding:14px 14px 6px; }
-  .panel-h .t{ font-weight:800; font-size:16px; }
+  .panel-h .t{ font-weight:800; font-size:16px; color:#0f0f0f; }
   .panel-h .d{ font-size:11.5px; color:var(--mute); margin-top:2px; }
-  .prow{ display:flex; align-items:center; justify-content:space-between; padding:13px 14px; border-bottom:1px solid var(--line); font-size:13px; }
+  .prow{ display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--line); font-size:13px; color:#0f0f0f; cursor:pointer; }
+  .prow small{ color:#999; font-size:11px; }
   .prow .pv.on{ color:var(--green); font-weight:700; font-size:12px; }
   .prow .pv.off{ color:#999; font-weight:700; font-size:12px; }
-  .hint{ position:absolute; background:var(--yt-red); color:#fff; font-size:10.5px; font-weight:700; padding:5px 9px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,.3); z-index:5; }
-  .hint:after{ content:""; position:absolute; width:0; height:0; }
-  .caption{ color:#9a9a9a; font-size:11px; text-align:center; margin-top:8px; }
-  /* side rail */
-  .rail{ width:260px; color:#ddd; }
-  .rail h3{ color:#fff; font-size:13px; margin:0 0 8px; text-transform:uppercase; letter-spacing:1px; }
-  .step{ display:flex; gap:10px; padding:9px 10px; border-radius:10px; cursor:pointer; font-size:12.5px; color:#bdbdbd; border:1px solid transparent; }
-  .step:hover{ background:#1b1b1b; }
-  .step.active{ background:#1b1b1b; border-color:#333; color:#fff; }
-  .step .n{ width:22px; height:22px; border-radius:50%; background:#333; color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center; flex:none; }
-  .step.active .n{ background:var(--yt-red); }
-  .reset{ margin-top:14px; background:#1b1b1b; border:1px solid #333; color:#ddd; font-size:12px; padding:9px 12px; border-radius:9px; cursor:pointer; width:100%; }
-  .legend{ color:#7a7a7a; font-size:11px; margin-top:12px; line-height:1.5; }
+  .dodont{ background:#151515; border:1px solid #2a2a2a; border-radius:12px; padding:10px 12px; margin:8px 0; }
+  .dodont .h{ font-size:11px; font-weight:800; letter-spacing:.5px; margin-bottom:5px; }
+  .dodont ul{ margin:0; padding:0; list-style:none; }
+  .dodont li{ font-size:11.5px; color:#dcdcdc; padding:3px 0; }
+  .restart{ margin-top:16px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.15); color:#cfcfcf; font-size:12px; padding:8px 16px; border-radius:20px; cursor:pointer; }
 </style>
 </head>
 <body>
-  <h1>PrivacyPal × YouTube — clickable prototype</h1>
-  <div class="sub">Happy path: first-run consent → purpose-by-purpose choices → consent receipt → personalised YouTube → later withdraw from “Your Consent”. Tap buttons in the phone, or jump with the steps on the right.</div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
 
-  <div class="stage">
-    <div class="phone">
-      <div class="screen">
+      <!-- 1. FIRST RUN -->
+      <section class="view active" data-step="1">
+        <div class="ytbar"><div class="ytlogo"><span class="play"></span>YouTube</div><div class="sp"></div><div class="icobtn">🔍</div><div class="icobtn">👤</div></div>
+        <div class="body" style="filter:blur(1.5px);">
+          <div class="feed-note">First launch — feed not personalised yet</div>
+          <div class="vid"><div class="thumb"><span class="dur">10:24</span></div><div class="vmeta"><div class="avatar"></div><div><div class="vtitle">Learn something new today</div><div class="vch">Discover • 1.2M views</div></div></div></div>
+          <div class="vid"><div class="thumb b"><span class="dur">6:03</span></div><div class="vmeta"><div class="avatar"></div><div><div class="vtitle">Top music this week</div><div class="vch">Charts • 840K views</div></div></div></div>
+        </div>
+        <div class="overlay">
+          <div class="sheet">
+            <div class="pp-head"><div class="pp-ava">🤖</div><div><div class="pp-name">PrivacyPal</div><div class="pp-on">● here to set up your privacy</div></div></div>
+            <div class="bubble">Hi! Before we personalise YouTube, let's quickly set what data I use — and why. Takes ~20 seconds, and you can change any of it later.</div>
+            <button class="btn" onclick="go(8)">💬 Chat with PrivacyPal first</button>
+            <button class="btn ghost" onclick="go(2)">Set up my privacy →</button>
+          </div>
+        </div>
+      </section>
 
-        <!-- 1. FIRST RUN: home + consent sheet -->
-        <section class="view active" data-step="1">
-          <div class="ytbar">
-            <div class="ytlogo"><span class="play"></span>YouTube</div>
-            <div class="sp"></div>
-            <div class="icobtn">🔍</div><div class="icobtn">👤</div>
+      <!-- 2. PURPOSE TOGGLES -->
+      <section class="view" data-step="2">
+        <div class="ytbar"><div class="ytlogo"><span class="play"></span>YouTube</div><div class="sp"></div><div class="icobtn" onclick="go(1)">✕</div></div>
+        <div class="body chatbody"><div style="padding:14px 16px;">
+          <div class="pp-head"><div class="pp-ava">🤖</div><div><div class="pp-name">PrivacyPal</div><div class="pp-on">● online</div></div></div>
+          <div class="bubble">Here's what I'd use, one purpose at a time. Turn on only what you want — nothing is bundled.</div>
+          <div class="tog on" onclick="tog(this)"><div><div class="tt">Recommendations</div><div class="td">Use watch &amp; search history to suggest videos</div></div><div class="sw"></div></div>
+          <div class="tog" onclick="tog(this)"><div><div class="tt">Personalised ads</div><div class="td">Use activity across Google to target ads</div></div><div class="sw"></div></div>
+          <div class="tog" onclick="tog(this)"><div><div class="tt">Precise location</div><div class="td">Use exact location for local content</div></div><div class="sw"></div></div>
+          <div class="bubble" style="margin-top:12px;">Change any of these anytime — just say “stop ad tracking”.</div>
+          <button class="btn" onclick="go(3)">Save my choices →</button>
+        </div></div>
+      </section>
+
+      <!-- 3. RECEIPT -->
+      <section class="view" data-step="3">
+        <div class="ytbar"><div class="ytlogo"><span class="play"></span>YouTube</div><div class="sp"></div></div>
+        <div class="center">
+          <div class="tick">✓</div><h2>Consent saved</h2>
+          <p>Your choices are recorded with a timestamp — the DPDP consent receipt &amp; audit trail.</p>
+          <div class="receipt">
+            <div class="r"><span>Recommendations</span><span class="rv on" id="r1">ON</span></div>
+            <div class="r"><span>Personalised ads</span><span class="rv off" id="r2">OFF</span></div>
+            <div class="r"><span>Precise location</span><span class="rv off" id="r3">OFF</span></div>
+            <div class="r"><span>Recorded</span><span style="color:#666;">just now • v1</span></div>
           </div>
-          <div class="body" style="filter:blur(1.5px);">
-            <div class="feed-note">📍 First launch — feed not personalised yet</div>
-            <div class="vid"><div class="thumb"><span class="dur">10:24</span></div>
-              <div class="vmeta"><div class="avatar"></div><div><div class="vtitle">Learn something new today</div><div class="vch">Discover • 1.2M views</div></div></div></div>
-            <div class="vid"><div class="thumb b"><span class="dur">6:03</span></div>
-              <div class="vmeta"><div class="avatar"></div><div><div class="vtitle">Top music this week</div><div class="vch">Charts • 840K views</div></div></div></div>
+          <button class="btn grn" onclick="go(4)">Continue to YouTube →</button>
+        </div>
+      </section>
+
+      <!-- 4. PERSONALISED HOME -->
+      <section class="view" data-step="4">
+        <div class="ytbar"><div class="ytlogo"><span class="play"></span>YouTube</div><div class="sp"></div><div class="icobtn">🔍</div><div class="icobtn shield badge" title="Your Consent" onclick="go(5)">🛡️</div><div class="icobtn">👤</div></div>
+        <div class="body">
+          <div class="feed-note" style="background:#eef8f0; color:#1e7a34;">✓ Personalised with your consent • tap 🛡️ to manage anytime</div>
+          <div class="vid"><div class="thumb c"><span class="dur">12:10</span></div><div class="vmeta"><div class="avatar"></div><div><div class="vtitle">Recommended for you</div><div class="vch">Your topics • 2.1M views</div></div></div></div>
+          <div class="vid"><div class="thumb"><span class="dur">8:45</span></div><div class="vmeta"><div class="avatar"></div><div><div class="vtitle">Because you watched cooking</div><div class="vch">FoodLab • 560K views</div></div></div></div>
+          <div class="vid"><div class="thumb b"><span class="dur">4:30</span></div><div class="vmeta"><div class="avatar"></div><div><div class="vtitle">Contextual ad — not behavioural</div><div class="vch">Sponsored • about this video</div></div></div></div>
+        </div>
+      </section>
+
+      <!-- 5. YOUR CONSENT DASHBOARD -->
+      <section class="view" data-step="5">
+        <div class="ytbar"><div class="icobtn" onclick="go(4)">←</div><div class="ytlogo" style="font-size:14px;">Your Consent</div><div class="sp"></div></div>
+        <div class="body">
+          <div class="panel-h"><div class="t">Your Consent</div><div class="d">What you've allowed, and when. Change anything, or ask PrivacyPal.</div></div>
+          <div class="prow"><div>Recommendations<br><small>granted just now</small></div><span class="pv on">ON</span></div>
+          <div class="prow"><div>Personalised ads<br><small>not granted</small></div><span class="pv off">OFF</span></div>
+          <div class="prow"><div>Precise location<br><small>not granted</small></div><span class="pv off">OFF</span></div>
+          <div class="prow"><div>Access / download my data<br><small>DPDP right</small></div><span style="color:var(--blue);font-weight:600;font-size:12px;">Request</span></div>
+          <div class="prow"><div>Delete my data<br><small>DPDP right</small></div><span style="color:var(--yt-red);font-weight:600;font-size:12px;">Erase</span></div>
+          <div class="prow" onclick="go(7)" style="background:#fafafa;"><div>🔎 Ask about my privacy<br><small>based on your Google data controls</small></div><span style="color:var(--ink);font-weight:700;font-size:16px;">›</span></div>
+          <div style="padding:16px;"><button class="btn" onclick="go(6)">💬 Manage in chat</button></div>
+        </div>
+      </section>
+
+      <!-- 6. WITHDRAW IN CHAT -->
+      <section class="view" data-step="6">
+        <div class="ytbar"><div class="icobtn" onclick="go(5)">←</div><div class="ytlogo" style="font-size:14px;">PrivacyPal</div><div class="sp"></div></div>
+        <div class="body chatbody"><div style="padding:14px 16px;">
+          <div class="pp-head"><div class="pp-ava">🤖</div><div><div class="pp-name">PrivacyPal</div><div class="pp-on">● online</div></div></div>
+          <div class="bubble">Hi again! What would you like to change?</div>
+          <div class="chips" id="chips">
+            <div class="chip" onclick="withdraw()">Stop ad tracking</div>
+            <div class="chip" onclick="pauseHist()">Pause watch history</div>
+            <div class="chip" onclick="go(7)">Ask about my privacy</div>
           </div>
-          <div class="overlay">
-            <div class="sheet">
-              <div class="pp-head"><div class="pp-ava">🤖</div><div><div class="pp-name">PrivacyPal</div><div class="pp-on">● here to set up your privacy</div></div></div>
-              <div class="bubble">Hi! Before we personalise YouTube, let's quickly set what data I use — and why. It takes about 20 seconds, and you can change any of it later.</div>
-              <button class="btn" onclick="go(2)">Set up my privacy →</button>
-              <button class="btn ghost" onclick="go(2)">Use only the essentials</button>
+          <div id="thread"></div>
+        </div></div>
+      </section>
+
+      <!-- 7. PRIVACY HELP (GOOGLE DATA) -->
+      <section class="view" data-step="7">
+        <div class="ytbar"><div class="icobtn" onclick="go(5)">←</div><div class="ytlogo" style="font-size:14px;">Privacy help</div><div class="sp"></div></div>
+        <div class="body chatbody"><div style="padding:14px 16px;">
+          <div class="pp-head"><div class="pp-ava">🤖</div><div><div class="pp-name">PrivacyPal</div><div class="pp-on">● uses your Google data controls</div></div></div>
+          <div class="bubble">Ask me anything about your data. I work with Google's own privacy tools — <b>My Activity</b>, <b>Ad Settings</b> and <b>Family Link</b> — so I can show you and change what's collected.</div>
+          <div class="chips" id="qchips">
+            <div class="chip" onclick="ans('collect')">What does Google collect?</div>
+            <div class="chip" onclick="ans('ads')">Stop personalised ads</div>
+            <div class="chip" onclick="ans('del')">Delete my history</div>
+            <div class="chip" onclick="ans('do')">What should I do?</div>
+            <div class="chip" onclick="ans('dont')">What should I NOT do?</div>
+          </div>
+          <div id="qthread"></div>
+        </div></div>
+      </section>
+
+      <!-- 8. FREE AI CHAT (before any toggle/save) -->
+      <section class="view" data-step="8">
+        <div class="ytbar"><div class="icobtn" onclick="go(1)">←</div><div class="ytlogo" style="font-size:14px;">PrivacyPal</div><div class="sp"></div><div class="icobtn">⋯</div></div>
+        <div class="body" style="background:#0f0f0f; display:flex; flex-direction:column; overflow:hidden;">
+          <div id="aithread" style="flex:1; overflow-y:auto; padding:14px 16px;">
+            <div class="pp-head"><div class="pp-ava">🤖</div><div><div class="pp-name">PrivacyPal</div><div class="pp-on">● AI privacy assistant</div></div></div>
+            <div class="bubble">Ask me anything about your privacy on YouTube — in your own words. Type a question below, or tap one to start.</div>
+            <div class="chips">
+              <div class="chip" onclick="aiChip('What data do you collect about me?')">What data do you collect?</div>
+              <div class="chip" onclick="aiChip('Can you turn off personalised ads?')">Turn off ads?</div>
+              <div class="chip" onclick="aiChip('Is my child’s data safe?')">Is my kid's data safe?</div>
+              <div class="chip" onclick="aiChip('How do I delete my history?')">Delete my history?</div>
             </div>
           </div>
-          <div class="hint" style="left:12px; top:8px;">① Chatbot appears on first launch</div>
-        </section>
-
-        <!-- 2. PURPOSE TOGGLES -->
-        <section class="view" data-step="2">
-          <div class="ytbar"><div class="ytlogo"><span class="play"></span>YouTube</div><div class="sp"></div><div class="icobtn">✕</div></div>
-          <div class="body" style="background:#0f0f0f;">
-            <div style="padding:14px 16px; color:#fff;">
-              <div class="pp-head"><div class="pp-ava">🤖</div><div><div class="pp-name">PrivacyPal</div><div class="pp-on">● online</div></div></div>
-              <div class="bubble">Here's what I'd use, one purpose at a time. Turn on only what you want — nothing is bundled.</div>
-              <div class="tog on" onclick="tog(this)"><div><div class="tt">Recommendations</div><div class="td">Use watch &amp; search history to suggest videos</div></div><div class="sw"></div></div>
-              <div class="tog" onclick="tog(this)"><div><div class="tt">Personalised ads</div><div class="td">Use activity across Google to target ads</div></div><div class="sw"></div></div>
-              <div class="tog" onclick="tog(this)"><div><div class="tt">Precise location</div><div class="td">Use exact location for local content</div></div><div class="sw"></div></div>
-              <div class="bubble" style="margin-top:12px;">You can ask me to change any of these anytime — just say “stop ad tracking”.</div>
-              <button class="btn" onclick="go(3)">Save my choices →</button>
-            </div>
+          <div class="inbar">
+            <input id="aiInput" placeholder="Ask about your privacy…" onkeydown="if(event.key==='Enter'){aiSend();}" />
+            <button class="send" onclick="aiSend()">➤</button>
           </div>
-          <div class="hint" style="left:12px; top:120px;">② One switch per purpose — not one blanket “I agree”</div>
-        </section>
+          <button class="btn" style="margin:10px 12px 12px;" onclick="go(2)">Continue to privacy setup →</button>
+        </div>
+      </section>
 
-        <!-- 3. CONSENT RECEIPT -->
-        <section class="view" data-step="3">
-          <div class="ytbar"><div class="ytlogo"><span class="play"></span>YouTube</div><div class="sp"></div></div>
-          <div class="center">
-            <div class="tick">✓</div>
-            <h2>Consent saved</h2>
-            <p>Your choices are recorded with a timestamp — this is the DPDP consent receipt and audit trail.</p>
-            <div class="receipt">
-              <div class="r"><span>Recommendations</span><span class="rv on" id="r1">ON</span></div>
-              <div class="r"><span>Personalised ads</span><span class="rv off" id="r2">OFF</span></div>
-              <div class="r"><span>Precise location</span><span class="rv off" id="r3">OFF</span></div>
-              <div class="r"><span>Recorded</span><span style="color:#666;">just now • v1</span></div>
-            </div>
-            <button class="btn grn" onclick="go(4)">Continue to YouTube →</button>
-          </div>
-          <div class="hint" style="left:12px; top:8px;">③ Consent receipt = proof for DPDP</div>
-        </section>
-
-        <!-- 4. PERSONALISED HOME + entry point -->
-        <section class="view" data-step="4">
-          <div class="ytbar">
-            <div class="ytlogo"><span class="play"></span>YouTube</div><div class="sp"></div>
-            <div class="icobtn">🔍</div>
-            <div class="icobtn shield badge" title="Your Consent" onclick="go(5)">🛡️</div>
-            <div class="icobtn">👤</div>
-          </div>
-          <div class="body">
-            <div class="feed-note" style="background:#eef8f0; color:#1e7a34;">✓ Personalised with your consent • tap 🛡️ anytime to manage</div>
-            <div class="vid"><div class="thumb c"><span class="dur">12:10</span></div>
-              <div class="vmeta"><div class="avatar"></div><div><div class="vtitle">Recommended for you</div><div class="vch">Your topics • 2.1M views</div></div></div></div>
-            <div class="vid"><div class="thumb"><span class="dur">8:45</span></div>
-              <div class="vmeta"><div class="avatar"></div><div><div class="vtitle">Because you watched cooking</div><div class="vch">FoodLab • 560K views</div></div></div></div>
-            <div class="vid"><div class="thumb b"><span class="dur">4:30</span></div>
-              <div class="vmeta"><div class="avatar"></div><div><div class="vtitle">Contextual ad — not behavioural</div><div class="vch">Sponsored • about this video</div></div></div></div>
-          </div>
-          <div class="hint" style="right:60px; top:8px;">④ Persistent 🛡️ entry point to “Your Consent”</div>
-        </section>
-
-        <!-- 5. YOUR CONSENT dashboard -->
-        <section class="view" data-step="5">
-          <div class="ytbar"><div class="icobtn" onclick="go(4)">←</div><div class="ytlogo" style="font-size:14px;">Your Consent</div><div class="sp"></div></div>
-          <div class="body">
-            <div class="panel-h"><div class="t">Your Consent</div><div class="d">What you've allowed, and when. Change anything with one tap or ask PrivacyPal.</div></div>
-            <div class="prow"><div>Recommendations<br><span style="font-size:11px;color:#999;">granted just now</span></div><span class="pv on">ON</span></div>
-            <div class="prow"><div>Personalised ads<br><span style="font-size:11px;color:#999;">not granted</span></div><span class="pv off">OFF</span></div>
-            <div class="prow"><div>Precise location<br><span style="font-size:11px;color:#999;">not granted</span></div><span class="pv off">OFF</span></div>
-            <div class="prow"><div>Access / download my data<br><span style="font-size:11px;color:#999;">DPDP right</span></div><span style="color:var(--blue);font-weight:600;font-size:12px;">Request</span></div>
-            <div class="prow"><div>Delete my data<br><span style="font-size:11px;color:#999;">DPDP right</span></div><span style="color:var(--yt-red);font-weight:600;font-size:12px;">Erase</span></div>
-            <div style="padding:16px;"><button class="btn" onclick="go(6)">💬 Manage in chat</button></div>
-          </div>
-          <div class="hint" style="left:12px; top:8px;">⑤ Self-serve dashboard = user rights</div>
-        </section>
-
-        <!-- 6. WITHDRAW IN CHAT -->
-        <section class="view" data-step="6">
-          <div class="ytbar"><div class="icobtn" onclick="go(5)">←</div><div class="ytlogo" style="font-size:14px;">PrivacyPal</div><div class="sp"></div></div>
-          <div class="body" style="background:#0f0f0f;">
-            <div style="padding:14px 16px;">
-              <div class="pp-head"><div class="pp-ava">🤖</div><div><div class="pp-name">PrivacyPal</div><div class="pp-on">● online</div></div></div>
-              <div class="bubble">Hi again! What would you like to change?</div>
-              <div class="chips" id="chips">
-                <div class="chip" onclick="withdraw()">Stop ad tracking</div>
-                <div class="chip" onclick="askData()">What do you know about me?</div>
-                <div class="chip" onclick="pauseHist()">Pause watch history</div>
-              </div>
-              <div id="thread"></div>
-            </div>
-          </div>
-          <div class="hint" style="left:12px; top:8px;">⑥ Withdraw by simply asking</div>
-        </section>
-
-      </div>
-    </div>
-
-    <div class="rail">
-      <h3>Happy-path steps</h3>
-      <div class="step active" data-s="1" onclick="go(1)"><div class="n">1</div><div>First launch → PrivacyPal appears</div></div>
-      <div class="step" data-s="2" onclick="go(2)"><div class="n">2</div><div>Choose purposes (granular toggles)</div></div>
-      <div class="step" data-s="3" onclick="go(3)"><div class="n">3</div><div>Consent receipt saved</div></div>
-      <div class="step" data-s="4" onclick="go(4)"><div class="n">4</div><div>Personalised YouTube + 🛡️ entry point</div></div>
-      <div class="step" data-s="5" onclick="go(5)"><div class="n">5</div><div>“Your Consent” dashboard</div></div>
-      <div class="step" data-s="6" onclick="go(6)"><div class="n">6</div><div>Withdraw in chat (“stop ad tracking”)</div></div>
-      <button class="reset" onclick="resetProto()">↺ Restart flow</button>
-      <div class="legend"><b>Where the chatbot lives in YouTube:</b><br>• A first-run consent sheet over the home feed<br>• A persistent 🛡️ icon in the top bar → “Your Consent”<br>• In-chat management to withdraw or exercise rights anytime</div>
     </div>
   </div>
+  <button class="restart" onclick="resetProto()">↺ Restart prototype</button>
 
 <script>
   var choices = { ads:false, loc:false, rec:true };
   function go(n){
-    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', +v.dataset.step===n));
-    document.querySelectorAll('.step').forEach(st=>st.classList.toggle('active', +st.dataset.s===n));
-    if(n===3){ syncReceipt(); }
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.toggle('active', +v.dataset.step===n); });
+    if(n===3) syncReceipt();
     if(n===6){ document.getElementById('thread').innerHTML=''; document.getElementById('chips').style.display='flex'; }
+    if(n===7){ document.getElementById('qthread').innerHTML=''; document.getElementById('qchips').style.display='flex'; }
+    document.querySelector('.body').scrollTop=0;
   }
   function tog(el){
     el.classList.toggle('on');
@@ -244,19 +238,67 @@
     else if(t.indexOf('location')>-1) choices.loc = el.classList.contains('on');
     else choices.rec = el.classList.contains('on');
   }
-  function syncReceipt(){
-    set('r1', choices.rec); set('r2', choices.ads); set('r3', choices.loc);
-  }
+  function syncReceipt(){ set('r1',choices.rec); set('r2',choices.ads); set('r3',choices.loc); }
   function set(id,on){ var e=document.getElementById(id); if(!e)return; e.textContent=on?'ON':'OFF'; e.className='rv '+(on?'on':'off'); }
-  function bub(txt, me){ var t=document.getElementById('thread'); var d=document.createElement('div'); d.className='bubble'+(me?' me':''); d.textContent=txt; t.appendChild(d); }
-  function withdraw(){ document.getElementById('chips').style.display='none'; bub('Stop ad tracking', true);
-    setTimeout(function(){ bub('Done ✓ Personalised ads are now OFF. You\'ll still see ads, but based only on the video — not your history. Your consent receipt is updated.'); choices.ads=false; }, 300); }
-  function askData(){ document.getElementById('chips').style.display='none'; bub('What do you know about me?', true);
-    setTimeout(function(){ bub('Right now: your watch & search history — used only for recommendations. No ad profiling, no precise location. Want to download or delete any of it?'); }, 300); }
-  function pauseHist(){ document.getElementById('chips').style.display='none'; bub('Pause watch history', true);
-    setTimeout(function(){ bub('Watch history is paused ✓ New videos won\'t be saved, and recommendations will stay generic until you turn it back on.'); }, 300); }
+  function bub(txt,me,id){ var t=document.getElementById(id||'thread'); var d=document.createElement('div'); d.className='bubble'+(me?' me':''); d.innerHTML=txt; t.appendChild(d); }
+  function withdraw(){ document.getElementById('chips').style.display='none'; bub('Stop ad tracking',true);
+    setTimeout(function(){ bub('Done ✓ Personalised ads are now OFF. You\'ll still see ads — but based only on the video, not your history. Your consent receipt is updated.'); choices.ads=false; },300); }
+  function pauseHist(){ document.getElementById('chips').style.display='none'; bub('Pause watch history',true);
+    setTimeout(function(){ bub('Watch history is paused ✓ New videos won\'t be saved, and recommendations stay generic until you turn it back on.'); },300); }
+  // Google-privacy Q&A
+  function ans(kind){
+    document.getElementById('qchips').style.display='none';
+    var q={collect:'What does Google collect?', ads:'Stop personalised ads', del:'Delete my history', do:'What should I do?', dont:'What should I NOT do?'}[kind];
+    bub(q,true,'qthread');
+    var a='';
+    if(kind==='collect') a='Through your Google Account: <b>watch &amp; search history</b>, device &amp; app info, and — only if you allow it — <b>location</b>. You can see every item in My Activity, and I can open it for you.';
+    else if(kind==='ads') a='I can switch off <b>ad personalisation</b> in Google Ad Settings. You\'ll keep seeing ads, but matched to the video, not to your profile. Want me to turn it off now?';
+    else if(kind==='del') a='I can clear your history, or set <b>auto-delete</b> to 3 months, from My Activity. Say “delete last hour”, “clear all”, or “auto-delete 3 months”.';
+    else if(kind==='do'){ setTimeout(function(){ dodont('do'); },300); bub('Good moves for your privacy:',false,'qthread'); reshow(); return; }
+    else if(kind==='dont'){ setTimeout(function(){ dodont('dont'); },300); bub('Things to avoid:',false,'qthread'); reshow(); return; }
+    setTimeout(function(){ bub(a,false,'qthread'); reshow(); },300);
+  }
+  function dodont(kind){
+    var t=document.getElementById('qthread'); var box=document.createElement('div'); box.className='dodont';
+    if(kind==='do') box.innerHTML='<div class="h" style="color:#1ea84a;">✓ DO</div><ul>'+
+      '<li>✓ Turn on <b>auto-delete</b> (every 3 months)</li>'+
+      '<li>✓ Keep ad personalisation OFF if unsure</li>'+
+      '<li>✓ Use a <b>supervised account</b> / Family Link for kids</li>'+
+      '<li>✓ Review app permissions once a month</li>'+
+      '<li>✓ Check “Your Consent” after any big update</li></ul>';
+    else box.innerHTML='<div class="h" style="color:#ff5a5a;">✕ DON\'T</div><ul>'+
+      '<li>✕ Don\'t let your child watch on your adult account</li>'+
+      '<li>✕ Don\'t tap “Accept all” without reading</li>'+
+      '<li>✕ Don\'t leave <b>precise location</b> on by default</li>'+
+      '<li>✕ Don\'t reuse your Google password elsewhere</li>'+
+      '<li>✕ Don\'t ignore the consent dashboard</li></ul>';
+    t.appendChild(box);
+  }
+  function reshow(){ setTimeout(function(){ var c=document.getElementById('qchips'); c.style.display='flex'; },500); }
+  // free-text AI chat (keyword-matched replies)
+  function aiChip(q){ document.getElementById('aiInput').value=q; aiSend(); }
+  function aibub(txt,me){ var t=document.getElementById('aithread'); var d=document.createElement('div'); d.className='bubble'+(me?' me':''); d.innerHTML=txt; t.appendChild(d); }
+  function scrollAi(){ var t=document.getElementById('aithread'); t.scrollTop=t.scrollHeight; }
+  function aiSend(){ var inp=document.getElementById('aiInput'); var q=(inp.value||'').trim(); if(!q) return;
+    aibub(q,true); inp.value=''; scrollAi();
+    var t=document.getElementById('aithread'); var tp=document.createElement('div'); tp.className='typing'; tp.textContent='PrivacyPal is typing…'; t.appendChild(tp); scrollAi();
+    setTimeout(function(){ tp.remove(); aibub(aiReply(q),false); scrollAi(); }, 500); }
+  function aiReply(q){ var s=q.toLowerCase();
+    if(/child|kid|son|daughter|family|parent|minor/.test(s)) return "For under-18s, YouTube needs <b>verifiable parental consent</b> via Google Family Link. On a child account there are <b>no personalised ads</b> and no behavioural tracking — only contextual ones. Want me to set up a supervised account?";
+    if(/ad|advertis|track/.test(s)) return "Personalised ads use your activity across Google. I can turn that <b>off</b> in Ad Settings — you'll still see ads, just matched to the video, not to you. Say “stop ad tracking”.";
+    if(/delete|erase|remove|clear|history/.test(s)) return "I can clear your watch &amp; search history, or set <b>auto-delete to 3 months</b>, from My Activity. Tell me “delete last hour”, “clear all”, or “auto-delete”.";
+    if(/location|gps|where am/.test(s)) return "Precise location is <b>off by default</b> here. It's only used if you switch it on for local content — and you can revoke it anytime.";
+    if(/collect|what data|know about me|what do you know/.test(s)) return "Right now: your <b>watch &amp; search history</b>, device info, and — only if you allow it — location. You can see every item in My Activity, and download or delete any of it.";
+    if(/withdraw|change|stop|revoke|opt.?out|turn off/.test(s)) return "You can change any consent anytime — just tell me, e.g. “stop ad tracking” or “pause history”. It's as easy as turning it on.";
+    if(/secure|safe|protect|password|hack|breach|leak/.test(s)) return "Keep ad personalisation off if unsure, turn on <b>auto-delete</b>, and never reuse your Google password. I'll also flag anything unusual on your account.";
+    if(/share|third|sell|who sees|who gets/.test(s)) return "Your data isn't sold. It's used within Google to run and personalise the service — and only for the purposes you allow here.";
+    if(/right|dpdp|law|legal|complain/.test(s)) return "Under India's <b>DPDP Act</b> you can access, correct, download or erase your data, withdraw consent, and raise a grievance. I keep all of these one tap away.";
+    if(/recommend|suggest|feed/.test(s)) return "Recommendations use your watch &amp; search history to suggest videos. Keep it on for a tailored feed, or turn it off for a generic one — your choice.";
+    if(/hi|hello|hey|help|what can you/.test(s)) return "Hi! I can explain what data is collected, turn off ads, delete history, manage children's accounts, and handle your DPDP rights. Ask me anything, or tap a suggestion.";
+    return "Good question! I can help with: what data is collected, personalised ads, deleting history, location, children's accounts, and your DPDP rights. Try asking about one of those — or tap a suggestion above.";
+  }
   function resetProto(){ choices={ads:false,loc:false,rec:true};
-    document.querySelectorAll('.tog').forEach(function(t){ var tt=t.querySelector('.tt').textContent; t.classList.toggle('on', tt.indexOf('Recommend')>-1); });
+    document.querySelectorAll('.tog').forEach(function(t){ t.classList.toggle('on', t.querySelector('.tt').textContent.indexOf('Recommend')>-1); });
     go(1); }
 </script>
 </body>
